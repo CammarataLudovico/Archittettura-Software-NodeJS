@@ -1,0 +1,23 @@
+{
+  "name": "archittettura-software-nodejs",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently \"node --watch backend/index.js\" \"npm --prefix frontend run dev\"",
+    "start_pm2": "pm2 start backend/index.js --name backend --time",
+    "start_pm2_cluster": "pm2 start backend/index.js --name cluster --time -i max",
+    "loadheavy": "loadtest -n 1000 -c 10 http://localhost:3000/stresstest"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "loadtest": "^8.2.0"
+  }
+}
