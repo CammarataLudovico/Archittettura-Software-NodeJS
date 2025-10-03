@@ -3,10 +3,17 @@ const os = require('os')
 const express = require('express')
 const cors = require('cors')
 
-const server = express();
 const port = 3000;
+const server = express()
+
+const id = process.env.BACKEND_ID || 'backend-unkown'
 
 server.use(cors())
+
+server.use((req, res, next) => {
+  res.setHeader('X-Backend-ID', id);
+  next();
+})
 
 const prodotti = [
   [

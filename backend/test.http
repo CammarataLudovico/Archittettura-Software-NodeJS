@@ -7,3 +7,7 @@ GET http://localhost:3000/prodotti/2
 #################################
 
 GET http://localhost:3000/stresstest
+
+###############################
+
+GET http://localhost:80/ping
