@@ -8,9 +8,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "concurrently \"node --watch backend/index.js\" \"npm --prefix frontend run dev\"",
-    "start_pm2": "pm2 start backend/index.js --name backend --time",
-    "start_pm2_cluster": "pm2 start backend/index.js --name cluster --time -i max",
+    "start": "concurrently \"node --watch backend/src/index.js\" \"npm --prefix frontend run dev\"",
+    "start_pm2": "pm2 start backend/src/index.js --name backend --time",
+    "start_pm2_cluster": "pm2 start backend/src/index.js --name cluster --time -i max",
     "loadheavy": "loadtest -n 1000 -c 10 http://localhost:3000/stresstest"
   },
   "devDependencies": {
