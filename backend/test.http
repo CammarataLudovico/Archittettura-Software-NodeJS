@@ -11,3 +11,13 @@ GET http://localhost:3000/stresstest
 ###############################
 
 GET http://localhost:80/ping
+
+
+############################
+
+POST http://localhost:80/job-for-all
+Content-Type: application/json
+
+{
+    "name": "esempio di job"
+}
