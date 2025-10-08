@@ -21,3 +21,12 @@ Content-Type: application/json
 {
     "name": "esempio di job"
 }
+
+#####################
+
+POST http://localhost:80/pdf
+Content-Type: application/json
+
+{
+    "url": "https://itsaltoadriatico.it"
+}

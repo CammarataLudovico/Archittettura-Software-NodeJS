@@ -4,6 +4,7 @@ import { Job, Queue, Worker } from 'bullmq';
 import redisConnection from './config/redis.js';
 
 import cors from 'cors';
+import { url } from 'inspector';
 
 // BullMQ queue with Redis
 const mainQueue = new Queue('main-queue', {
@@ -70,6 +71,8 @@ const id = process.env.BACKEND_ID || 'backend-unkown'
 
 server.use(cors())
 
+server.use(express.json())
+
 server.use((req, res, next) => {
   res.setHeader('X-Backend-ID', id);
   next();
@@ -133,6 +136,16 @@ server.get('/stresstest', (req, res) => {
 server.post('/job-for-all', async (req, res) => {
     const job = await mainQueue.add('job', {name: req.body.name || 'default'})
     res.json({jobId: job.id})
+  } 
+)
+
+server.post('/pdf', async (req, res) => {
+    if (!req.body?.url){
+      res.status(400).json({error: "Manca url"});
+      return;
+    }
+    const job = await pdfQueue.add('job', {url: req.body.url})
+    res.json({jobId: job.id});
   } 
 )
 
