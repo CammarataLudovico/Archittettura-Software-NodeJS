@@ -6,6 +6,8 @@ services:
       - BACKEND_ID=backend-1
     networks:
       - app-network
+    depends_on:
+      - redis
 
   backend2:
     build: ./backend
@@ -14,6 +16,8 @@ services:
       - BACKEND_ID=backend-2
     networks:
       - app-network
+    depends_on:
+      - redis
 
   backend3:
     build: ./backend
@@ -22,52 +26,8 @@ services:
       - BACKEND_ID=backend-3
     networks:
       - app-network
-
-  mongo1:
-    image: mongo:6-jammy
-    ports:
-      - "27017:27017"
-    volumes:
-      - dbdata1:/data/db
-    environment:
-      - MONGO_ID=mongo-1
-    networks:
-      - app-network
-
-  mongo2:
-    image: mongo:6-jammy
-    ports:
-      - "27018:27017"
-    volumes:
-      - dbdata2:/data/db
-    environment:
-      - MONGO_ID=mongo-2
-    networks:
-      - app-network
-
-  mongo3:
-    image: mongo:6-jammy
-    ports:
-      - "27019:27017"
-    volumes:
-      - dbdata3:/data/db
-    environment:
-      - MONGO_ID=mongo-3
-    networks:
-      - app-network
-
-  mongo-gestor:
-    image: mongo:latest
     depends_on:
-      - mongo1
-      - mongo2
-      - mongo3
-    volumes:
-      - dbdata3:/data/db
-    environment:
-      - MONGO_ID=mongo-3
-    networks:
-      - app-network
+      - redis
 
   nginx:
     image: nginx:latest
@@ -82,11 +42,67 @@ services:
     networks:
       - app-network
 
+  mongo-replica-1:
+    image: mongo:6-jammy
+    restart: unless-stopped
+    container_name: mongo-replica-1
+    volumes:
+      - ./data/mongo1:/data/db
+    networks:
+      - app-network 
+    ports:
+      - "27017:27017"
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+
+  mongo-replica-2:
+    image: mongo:6-jammy
+    restart: unless-stopped
+    container_name: mongo-replica-2
+    volumes:
+      - ./data/mongo2:/data/db
+    networks:
+      - app-network 
+    ports:
+      - "27018:27017"
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+
+  mongo-replica-3:
+    image: mongo:6-jammy
+    restart: unless-stopped
+    container_name: mongo-replica-3
+    volumes:
+      - ./data/mongo3:/data/db
+    networks:
+      - app-network 
+    ports:
+      - "27019:27017"
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+
+  mongo-replica-setup:
+    image: mongo:latest
+    container_name: mongo-replica-setup
+    depends_on:
+      - mongo-replica-1
+      - mongo-replica-2
+      - mongo-replica-3
+    networks:
+      - app-network
+    restart: "no"
+    volumes:
+      - ./scripts:/scripts:ro
+    entrypoint: ["/bin/bash","/scripts/init-replica.sh"]
+  
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports: 
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/data
+    restart: unless-stopped  
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge
-
-volumes:
-  dbdata1:
-  dbdata2:
-  dbdata3:
